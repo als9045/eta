@@ -1,128 +1,105 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8"%>
+    pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>addDeal</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- ///// Bootstrap, jQuery CDN ///// -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-
-    <style>
-        @font-face {
-            font-family: 'NanumSquare';
-            src: url('https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@1.0/nanumsquare.css');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        body {
-            font-family: NanumSquare;
-            font-weight:300;
-            padding: 100px;
-        }
-    </style>
-
-    <script type="text/javascript">
-
-        $(function() {
-
-            $("a[href='#']").on("click" , function() {
-                $("form")[0].reset();
-            });
-        });
-
-    </script>
-
+  <meta charset="UTF-8">
+  <title>택시비 딜 배차</title>
+  
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js" ></script>
+  <script src="/javascript/community/addDeal.js"></script>
+  
 </head>
-<body>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
-<script>
 
-    $(function (){
+<body class="theme-light">
 
-        $( "button.btn.btn-primary" ).on("click" , function() {
+  <div id="page">
 
-            let preMoney = parseFloat($("#money").val()); // 문자열을 숫자로 변환
-            let TPay = parseFloat($("#myMoney").val()); // 문자열을 숫자로 변환
-            let offer = parseFloat($("#passengerOffer").val()); // 문자열을 숫자로 변환
+    <jsp:include page="../home/top.jsp" />
+  
+    <div class="page-content header-clear-medium">
 
-            console.log(preMoney);
-            console.log(TPay);
-            console.log(offer);
-
-            if (offer > TPay && offer > preMoney) {
-                Swal.fire({
-                    title: '알림',
-                    text: '잔여 TPay가 부족합니다.',
-                    icon: 'info',
-                    showCancelButton: true,
-                    confirmButtonText: '충전',
-                    cancelButtonText: '취소'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = '/pay/addCharge';
-                    }
-                });
-                return;
-            } else if (offer < preMoney && offer < TPay) {
-                alert("금액이 잘못 입력되었습니다.\n선결제 금액을 확인해주세요");
-                return;
-            } else if (offer > preMoney && offer < TPay) {
-                $("form").attr("method" , "POST").attr("action" , "/community/addDealReq").submit();
-            }
-        })
-    })
-</script>
-<div class="container">
-
-    <h2 class="bg-default text-center">딜배차</h2><br/>
-    <form class="form-horizontal" enctype="multipart/form-data">
-
-        <div class="form-group">
-            <div class="col-sm-4">
-                <input type="hidden" class="form-control" id="callNo" name="callNo" value="${callNo}">
+      <div class="card card-style">
+        <div class="content">
+          <form class="demo-animation needs-validation m-0" style="margin-top: 5px;" novalidate>
+            <input type="hidden" class="form-control" id="callNo" name="callNo" value="${callNo}">
+            <input type="hidden" id="userNo" value="${user.userNo }">
+            <input type="hidden" id="email" value="${user.email }">
+            <input type="hidden" id="name" value="${user.name }">
+            <input type="hidden" id="phone" value="${user.phone }">
+  
+            <div class="form-custom form-label form-icon mb-3">
+              <i class="bi bi-credit-card font-12"></i>
+              <input type="text" class="form-control rounded-xs" id="money"  name="money" value="${money}" readonly/>
+              <label for="money" class="form-label-always-active color-theme">선결제 금액</label>
             </div>
-        </div>
-
-        <div class="form-group">
-            <label for="money" class="col-sm-offset-1 col-sm-3 control-label">선결제 금액</label>
-            <div class="col-sm-4">
-                <input type="text" class="form-control" id="money" name="money" value="${money}" readonly>
+            
+            <div class="form-custom form-label form-icon mb-3">
+              <i class="bi bi-currency-dollar font-12"></i>
+              <input type="text" class="form-control rounded-xs" id="myMoney"  name="myMoney" readonly/>
+              <label for="myMoney" class="form-label-always-active color-theme">잔여 TPay</label>
             </div>
-        </div>
-
-        <div class="form-group">
-            <label for="myMoney" class="col-sm-offset-1 col-sm-3 control-label">잔여 Tpay</label>
-            <div class="col-sm-4">
-                <input type="text" class="form-control" id="myMoney" name="myMoney" value="${myMoney}" readonly>
+            
+            <div class="form-custom form-label form-icon mb-3">
+              <i class="bi bi-cash font-12"></i>
+              <input type="text" class="form-control rounded-xs" id="passengerOffer"  name="passengerOffer"/>
+              <label for="passengerOffer" class="form-label-always-active color-theme">제시 금액</label>
             </div>
+            
+            <button class="btn btn-full bg-blue-dark rounded-xs text-uppercase font-700 w-100 btn-s mt-4" type="submit" id="dealSubmit">제시 하기</button>
+          </form>
+        </div><!-- content -->
+      </div><!-- card card-style -->
+    
+    </div><!-- page-content header-clear-medium -->
+    
+    <!--dealAlert-->
+      <div id="dealAlert" class="toast toast-bar toast-top rounded-l bg-red-dark shadow-bg shadow-bg-s" data-bs-delay="3000">
+    
+        <div class="align-self-center">
+          <i class="icon icon-s bg-white color-red-dark rounded-l shadow-s bi bi-exclamation-triangle-fill font-22 me-3"></i>
         </div>
-
-        <div class="form-group">
-            <label for="passengerOffer" class="col-sm-offset-1 col-sm-3 control-label">제시금액</label>
-            <div class="col-sm-4">
-                <input type="text" class="form-control" id="passengerOffer" name="passengerOffer">
+        
+        <div class="align-self-center">
+          <strong class="font-12 mb-n2">금액이 잘못 입력되었습니다.</strong>
+          <span class="font-10 mt-n1 opacity-70">선결제 금액을 확인해주세요</span>
+        </div>
+        
+        <div class="align-self-center ms-auto">
+          <button type="button" class="btn-close btn-close-white me-2 m-auto font-9" data-bs-dismiss="toast"></button>
+        </div>
+        
+      </div>
+    <!--dealAlert 끝 -->
+  
+    <!--dealTpayError -->
+      <div id="dealTpayError" class="notification-bar glass-effect detached rounded-s shadow-l" data-bs-delay="15000">
+        <div class="toast-body px-3 py-3">
+          <div class="d-flex">
+            <div class="align-self-center">
+              <span class="icon icon-xxs rounded-xs bg-fade-red scale-box"><i class="bi bi-exclamation-triangle color-red-dark font-16"></i></span>
             </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-sm-offset-4  col-sm-4 text-center">
-                <button type="button" class="btn btn-primary"  >등&nbsp;록</button>
-                <a class="btn btn-primary btn" href="#" role="button">취&nbsp;소</a>
+            <div class="align-self-center">
+              <h5 class="font-16 ps-2 ms-1 mb-0">잔여 TPay가 부족합니다.</h5>
             </div>
+          </div>
+          <p class="font-12 pt-2 mb-3">
+            TPay 충전을 하시겠습니까?
+          </p>
+          <div class="row">
+            <div class="col-6">
+              <a href="#" data-bs-dismiss="toast" class="btn btn-s text-uppercase rounded-xs font-11 font-700 btn-full btn-border border-fade-red color-red-dark" aria-label="Close">취소</a>
+            </div>
+            <div class="col-6">
+              <a href="#" data-bs-dismiss="toast" class="btn btn-s text-uppercase rounded-xs font-11 font-700 btn-full btn-border bg-red-dark color-red-dark" aria-label="Close"  onclick="confirmAlert()">충전</a>
+            </div>
+          </div>
         </div>
-
-    </form>
-
-
-
-</div>
+      </div>
+    <!-- dealTpayError 끝-->
+    
+  </div><!-- page -->
+  
 </body>
 </html>

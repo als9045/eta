@@ -2,14 +2,52 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<!DOCTYPE html>
-<html>
+<!DOCTYPE HTML>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>input Address</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
+<title>eTa</title>
+<link rel="stylesheet" type="text/css" href="/templates/styles/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="/templates/fonts/bootstrap-icons.css">
+<link rel="stylesheet" type="text/css" href="/templates/styles/style.css">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<meta id="theme-check" name="theme-color" content="#FFFFFF">
+<link rel="apple-touch-icon" sizes="180x180" href="/templates/app/icons/icon-192x192.png">
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=70ef6f6883ad97593a97af6324198ac0&libraries=services"></script>
-<script>
 
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<script>
+// 각 input 요소에 대한 이벤트 핸들러 등록
+function registerInputEvents(inputElement, defaultValue) {
+
+    inputElement.addEventListener('click', function(event) {
+        // 클릭 시 입력 값 초기화
+        inputElement.value = '';
+        inputElement.placeholder = '주소를 입력해주세요';
+
+        // 이벤트 전파 방지
+        event.stopPropagation();
+    });
+
+    document.addEventListener('click', function() {
+        // 다른 곳을 클릭하면서 이전 값 복원
+      if (inputElement.value === '') {
+            inputElement.value = defaultValue;
+            inputElement.placeholder = '';
+        }
+
+        // 이벤트 전파 방지
+        event.stopPropagation();
+    });
+}
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(async function (position) {
         const latitude = position.coords.latitude;
@@ -34,6 +72,7 @@ if (navigator.geolocation) {
 
         if (startAddress == null) {
             document.getElementById('startAddrKeyword').value = "현 위치 : " + firstPlaceName;
+            registerInputEvents(startAddrKeyword, "현 위치 : " +firstPlaceName);
             document.getElementById('startx').value =firstLat;
             document.getElementById('starty').value =firstLng;
             window.selectOptionsStartData = {
@@ -44,7 +83,7 @@ if (navigator.geolocation) {
                 };
         } else {
             document.getElementById('startAddrKeyword').value = startPlaceName;
-
+            registerInputEvents(startAddrKeyword, startPlaceName);
         }
 
         if (startLat == null || startLng == null) {
@@ -91,7 +130,8 @@ if (navigator.geolocation) {
                     } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
                         resolve(detailAddr);
                     } else if (status === kakao.maps.services.Status.ERROR) {
-                        alert('검색 결과 중 오류가 발생했습니다.');
+                        var message = '검색 결과 중 오류가 발생했습니다';
+                        messageAlert(message);
                         resolve(detailAddr);
                     }
                 });
@@ -100,103 +140,189 @@ if (navigator.geolocation) {
 
     });
 }
+function messageAlert(message) {
+	 var toastContainer = document.createElement('div');
+     toastContainer.innerHTML = '<div id="notification-bar-5" class="notification-bar glass-effect detached rounded-s shadow-l fade show" data-bs-delay="15000">' +
+         '<div class="toast-body px-3 py-3">' +
+         '<div class="d-flex">' +
+         '<div class="align-self-center">' +
+         '<span class="icon icon-xxs rounded-xs bg-fade-red scale-box"><i class="bi bi-exclamation-triangle color-red-dark font-16"></i></span>' +
+         '</div>' +
+         '<div class="align-self-center">' +
+         '<h5 class="font-16 ps-2 ms-1 mb-0">'+message+'</h5>' +
+         '</div>' +
+         '</div><br>' +
+         '<a href="#" data-bs-dismiss="toast" id="confirmBtn" class="btn btn-s text-uppercase rounded-xs font-11 font-700 btn-full btn-border border-fade-red color-red-dark" aria-label="Close">확인</a>' +
+         '</div>' +
+         '</div>';
 
+     document.body.appendChild(toastContainer.firstChild); // body에 토스트 알림창 추가
+     
+     document.getElementById('confirmBtn').addEventListener('click', function () {
+         // Remove the toast element from the DOM
+         document.getElementById('notification-bar-5').remove();
+     });
+     $('.toast').toast('show'); // Bootstrap 토스트 표시 함수 호출
+}
 
 </script>
 <style>
 .hiddenButton{
-  display: none;
+  display: none; 
 }
 </style>
 </head>
-<body>
-    <div class="map_wrap">
-        <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
-        <div id="menu_wrap" class="bg_white">
-            <div class="startAddrSearch">
-                <div>
-                    <form class="form">
-                        <input type="text" value="" id="startAddrKeyword" size="50px"> 
-                        <button class="hiddenButton" id="startSubmit" type="submit">주소검색</button>
-                        <input type="hidden" value="" id="startx" size="20px"> 
-                        <input type="hidden" value="" id="starty" size="20px"> 
-                    </form>
+<body class="theme-light">
+<jsp:include page="/home/top.jsp" />
+<c:choose>
+    <c:when test="${empty user.role}">
+        <form name="detailform">
+        <div id="page">
+        <div class="page-content header-clear-medium">
+        <div class="card card-style" style="margin-bottom: 15px ;">
+          <div class="content" style="margin-bottom: 9px ;">
+         <div class="alert border-red-dark alert-dismissible color-red-dark rounded-s fade show" >
+           <i class="has-bg rounded-s bi bg-red-dark bi-exclamation-circle"></i>&nbsp;<strong>로그인해주세요.</strong>
+         </div>
+         </div>
+         </div>
+         </div>
+         </div>
+        </form>
+    </c:when>
+   <c:when test="${!empty user.role && user.role eq 'driver'}">
+                 <form name="detailform">
+        <div id="page">
+        <div class="page-content header-clear-medium">
+        <div class="card card-style" style="margin-bottom: 15px ;">
+          <div class="content" style="margin-bottom: 9px ;">
+         <div class="alert border-red-dark alert-dismissible color-red-dark rounded-s fade show" >
+           <i class="has-bg rounded-s bi bg-red-dark bi-exclamation-circle"></i>&nbsp;<strong>권한이 없습니다.</strong>
+         </div>
+         </div>
+         </div>
+         </div>
+         </div>
+        </form>
+    </c:when>
+    <c:otherwise>
+<div id="page">
+  <div class="page-content header-clear-medium">
+    <div class="card card-style">
+        <div class="map_wrap">
+            <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
+            <div id="menu_wrap" class="bg_white">
+               <div class="form-custom form-label form-icon mb-3">
+                <div class="startAddrSearch">
+                    <div>
+                        <form class="form">
+                        <br>
+                            <input type="text" value="" id="startAddrKeyword" class="form-control rounded-xs"> 
+                            <button class="hiddenButton" id="startSubmit" type="submit">주소검색</button>
+                            <input type="hidden" value="" id="startx" size="20px"> 
+                            <input type="hidden" value="" id="starty" size="20px"> 
+                        </form>
+                    </div>
                 </div>
-            </div>
-            <div class="endAddrSearch">
-                <div>
-                    <form class="form">
-                        <input type="text" value="" id="endAddrKeyword" size="50px"> 
-                        <button class="hiddenButton" id="endSubmit" type="submit">주소검색</button> 
-                        <input type="hidden" value="" id="endx" size="20px"> 
-                        <input type="hidden" value="" id="endy" size="20px"> 
-                    </form>
                 </div>
+                <div class="form-custom form-label form-icon mb-3">
+                <div class="endAddrSearch">
+                    <div>
+                        <form class="form">
+                            <input type="text" value="" id="endAddrKeyword" class="form-control rounded-xs"> 
+                            <button class="hiddenButton" id="endSubmit" type="submit">주소검색</button> 
+                            <input type="hidden" value="" id="endx" size="20px"> 
+                            <input type="hidden" value="" id="endy" size="20px"> 
+                        </form>
+                    </div>
+                </div>
+               </div>
+                <ul id="placesList"></ul>
+                <div id="pagination"></div>
             </div>
-            <hr>
-            <ul id="placesList"></ul>
-            <div id="pagination"></div>
         </div>
-    </div>
-    <!-- 출발지, 목적지 둘다 입력되어야 넘어가게 하기 -->
-    <button type="button" class="selectOptions" onclick="selectOptions('${callCode}')">옵션 선택</button><br>
-    <input type="hidden" value="${callCode}" id="getCallCode">
-    
-    <!-- 즐겨찾기 리스트-->
+                 <!-- 출발지, 목적지 둘다 입력되어야 넘어가게 하기 -->
+          <button type="button" class="btn btn-full bg-blue-dark rounded-xs text-uppercase font-700 w-100 btn-s mt-4" onclick="selectOptions('${callCode}')">옵션 선택</button><br>
+          <input type="hidden" value="${callCode}" id="getCallCode">
+          
+              <!-- 즐겨찾기 리스트-->
     <c:set var="i" value="0" />
     <c:forEach var="likeList" items="${likeList}">
       <c:set var="i" value="${ i+1 }" /> 
       <c:choose>
-        <c:when test="${empty likeList.likeAddr && !empty likeList.likeName}">
-           <button onclick="handleButtonClick('${likeList.likeAddr}')" disabled>${likeList.likeName}</button>       
+        <c:when test="${empty likeList.likeAddr && !empty likeList.likeName && likeList.likeName eq '집'}">
+             <button type="button" class="btn btn-secondary" onclick="handleButtonClick('${likeList.likeAddr}')" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-slash" viewBox="0 0 16 16">
+								  <path d="M13.879 10.414a2.5 2.5 0 0 0-3.465 3.465zm.707.707-3.465 3.465a2.501 2.501 0 0 0 3.465-3.465m-4.56-1.096a3.5 3.5 0 1 1 4.949 4.95 3.5 3.5 0 0 1-4.95-4.95Z"/>
+								  <path d="M7.293 1.5a1 1 0 0 1 1.414 0L11 3.793V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v3.293l2.354 2.353a.5.5 0 0 1-.708.708L8 2.207l-5 5V13.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 2 13.5V8.207l-.646.647a.5.5 0 1 1-.708-.708z"/>
+								</svg>
+              </button>     
+        </c:when>
+        <c:when test="${empty likeList.likeAddr && !empty likeList.likeName && likeList.likeName eq '회사'}">
+             <button type="button" class="btn btn-secondary" onclick="handleButtonClick('${likeList.likeAddr}')" disabled>
+				       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-building-slash" viewBox="0 0 16 16">
+								  <path d="M13.879 10.414a2.501 2.501 0 0 0-3.465 3.465zm.707.707-3.465 3.465a2.501 2.501 0 0 0 3.465-3.465m-4.56-1.096a3.5 3.5 0 1 1 4.949 4.95 3.5 3.5 0 0 1-4.95-4.95Z"/>
+								  <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6.5a.5.5 0 0 1-1 0V1H3v14h3v-2.5a.5.5 0 0 1 .5-.5H8v4H3a1 1 0 0 1-1-1z"/>
+								  <path d="M4.5 2a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-6 3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-6 3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/>
+								</svg>
+              </button>    
         </c:when>
         <c:when test="${empty likeList.likeAddr && empty likeList.likeName}">
-           <button onclick="handleButtonClick('${likeList.likeAddr}')" disabled>내별칭</button>       
+             <button type="button" class="btn btn-secondary" onclick="handleButtonClick('${likeList.likeAddr}')" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark-x" viewBox="0 0 16 16">
+								  <path fill-rule="evenodd" d="M6.146 5.146a.5.5 0 0 1 .708 0L8 6.293l1.146-1.147a.5.5 0 1 1 .708.708L8.707 7l1.147 1.146a.5.5 0 0 1-.708.708L8 7.707 6.854 8.854a.5.5 0 1 1-.708-.708L7.293 7 6.146 5.854a.5.5 0 0 1 0-.708"/>
+								  <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
+								</svg>
+              </button>     
         </c:when>
-        <c:otherwise>        
-          <button onclick="handleButtonClick('${likeList.likeAddr}','${likeList.likeName}','${likeList.likeX}','${likeList.likeY}')">${likeList.likeName}</button> 
+        <c:when test="${!empty likeList.likeAddr && !empty likeList.likeName && likeList.likeName eq '집'}">
+                <button type="button" class="btn-full btn border-blue-dark color-blue-dark" onclick="handleButtonClick('${likeList.likeAddr}','${likeList.likeName}','${likeList.likeX}','${likeList.likeY}')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-check-fill" viewBox="0 0 16 16">
+									  <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293z"/>
+									  <path d="m8 3.293 4.712 4.712A4.5 4.5 0 0 0 8.758 15H3.5A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"/>
+									  <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.707l.547.547 1.17-1.951a.5.5 0 1 1 .858.514Z"/>
+									</svg>
+              </button>
+        </c:when>
+        <c:when test="${!empty likeList.likeAddr && !empty likeList.likeName && likeList.likeName eq '회사'}">
+              <button type="button" class="btn-full btn border-blue-dark color-blue-dark" onclick="handleButtonClick('${likeList.likeAddr}','${likeList.likeName}','${likeList.likeX}','${likeList.likeY}')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-building-fill-check" viewBox="0 0 16 16">
+								  <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514Z"/>
+								  <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7.256A4.493 4.493 0 0 0 12.5 8a4.493 4.493 0 0 0-3.59 1.787A.498.498 0 0 0 9 9.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .39-.187A4.476 4.476 0 0 0 8.027 12H6.5a.5.5 0 0 0-.5.5V16H3a1 1 0 0 1-1-1zm2 1.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5m3 0v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5m3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5M7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5M4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/>
+								</svg>
+              </button> 
+        </c:when>
+        <c:otherwise>
+         <button type="button" class="btn-full btn border-blue-dark color-blue-dark" onclick="handleButtonClick('${likeList.likeAddr}','${likeList.likeName}','${likeList.likeX}','${likeList.likeY}')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark-star-fill" viewBox="0 0 16 16">
+								  <path fill-rule="evenodd" d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5M8.16 4.1a.178.178 0 0 0-.32 0l-.634 1.285a.178.178 0 0 1-.134.098l-1.42.206a.178.178 0 0 0-.098.303L6.58 6.993c.042.041.061.1.051.158L6.39 8.565a.178.178 0 0 0 .258.187l1.27-.668a.178.178 0 0 1 .165 0l1.27.668a.178.178 0 0 0 .257-.187L9.368 7.15a.178.178 0 0 1 .05-.158l1.028-1.001a.178.178 0 0 0-.098-.303l-1.42-.206a.178.178 0 0 1-.134-.098z"/>
+								</svg>
+								${likeList.likeName}
+         </button>
         </c:otherwise>
       </c:choose>     
      
     </c:forEach>
-
-    <!-- 이용내역 도착지 키워드, 주소 리스트 -->
-    <c:set var="i" value="0" />
-    <c:forEach var="endAddrList" items="${endAddrList}">
-      <c:set var="i" value="${ i+1 }" />
-      <div id="endAddrList">
-      <p><a onclick="handleButtonClick('${endAddrList.endAddr}','${endAddrList.endKeyword}',${endAddrList.endX},${endAddrList.endY})">${endAddrList.endKeyword} ${endAddrList.endAddr}</a></p>      
-      </div>
-    </c:forEach>    
-       
-</body>
+    <br>
+        <div class="list-group list-custom list-group-m rounded-xs"> 
+        <h5>&nbsp;&nbsp;최근 내역</h5><br>     
+            <!-- 이용내역 도착지 키워드, 주소 리스트 -->
+			    <c:set var="i" value="0" />
+			    <c:forEach var="endAddrList" items="${endAddrList}">
+			      <c:set var="i" value="${ i+1 }" />
+			      <div id="endAddrList">
+			        <a onclick="handleButtonClick('${endAddrList.endAddr}','${endAddrList.endKeyword}',${endAddrList.endX},${endAddrList.endY})" class="list-group-item">
+		            <div><h5 class="mb-0">${endAddrList.endKeyword}</h5><p class="pb-0">${endAddrList.endAddr}</p></div>
+		          </a> 
+			      </div>
+			    </c:forEach> 
+        </div>
+</div>
+</div>
+</div>
+</c:otherwise>
+</c:choose>
 <script>
-
-function handleButtonClick(Addr, Name, X, Y) {
-	
-	/*alert(likeAddr);
-	alert(likeName);
-	alert(likeX);
-	alert(likeY);*/
-	
-	var endAddrKeywordInput = document.getElementById('endAddrKeyword');
-	    endAddrKeywordInput.value=Addr;
-	var endxInput = document.getElementById('endx');
-	    endxInput.value=X;
-	var endyInput = document.getElementById('endy');
-	    endyInput.value=Y;
-	    
-	    window.selectOptionsEndData = {
-	            endAddress: Addr,
-	            endPlaceName: Addr,
-	            endLat: X,
-	            endLng: Y
-	        };
-	    
-	    
-
-}
-
 
 //마커를 담을 배열입니다
 var markers = [];
@@ -237,12 +363,13 @@ endAddrForm.addEventListener('submit', function (e) {
  
 //키워드 검색을 요청하는 함수입니다
 function searchPlaces(keywordId, type) {
-	  console.log("searchPlaces type : "+type);
-	
+    console.log("searchPlaces type : "+type);
+  
     var keyword = document.getElementById(keywordId).value;
 
     if (!keyword.replace(/^\s+|\s+$/g, '')) {
-        alert('키워드를 입력해주세요!');
+    	var message = '키워드를 입력해주세요!';
+    	  messageAlert(message);
         return false;
     }
     // 장소검색 객체를 통해 키워드로 장소검색을 요청합니다
@@ -253,7 +380,7 @@ function searchPlaces(keywordId, type) {
  
 // 장소검색이 완료됐을 때 호출되는 콜백함수 입니다
 function placesSearchCB(data, status, pagination, type) {
-	 console.log("placesSearchCB type : "+type);
+   console.log("placesSearchCB type : "+type);
     if (status === kakao.maps.services.Status.OK) {
 
         // 정상적으로 검색이 완료됐으면
@@ -264,13 +391,13 @@ function placesSearchCB(data, status, pagination, type) {
         displayPagination(pagination);
  
     } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
- 
-        alert('검색 결과가 존재하지 않습니다.');
+    	  var message='검색 결과가 존재하지 않습니다';
+        messageAlert(message);
         return;
  
     } else if (status === kakao.maps.services.Status.ERROR) {
- 
-        alert('검색 결과 중 오류가 발생했습니다.');
+    	  var message='검색 결과 중 오류가 발생했습니다';
+    	  messageAlert(message);
         return;
  
     }
@@ -278,7 +405,7 @@ function placesSearchCB(data, status, pagination, type) {
  
 // 검색 결과 목록과 마커를 표출하는 함수입니다
 function displayPlaces(places, type) {
-	console.log("displayPlaces type: "+type);
+  console.log("displayPlaces type: "+type);
     var listEl = document.getElementById('placesList'), 
     menuEl = document.getElementById('menu_wrap'),
     fragment = document.createDocumentFragment(), 
@@ -331,7 +458,7 @@ function displayPlaces(places, type) {
  
 // 검색결과 항목을 Element로 반환하는 함수입니다
 function getListItem(index, places, type) {
-	 console.log("getListItem : "+type);
+   console.log("getListItem : "+type);
     var el = document.createElement('li'),
     itemStr = '<span class="markerbg marker_' + (index+1) + '"></span>' +
                 '<div class="info">' +
@@ -345,7 +472,7 @@ function getListItem(index, places, type) {
     }
                  
       itemStr += '  <span class="tel">' + places.phone  + '</span>' +
-                '</div>';           
+                '</div><hr>';           
  
     el.innerHTML = itemStr;
     el.className = 'item';
@@ -353,7 +480,7 @@ function getListItem(index, places, type) {
     // 클릭 이벤트 핸들러에 클로저를 사용하여 좌표 정보 전달
     el.onclick = (function (place, type) {
         return function () {
-        	var position = new kakao.maps.LatLng(place.y, place.x);
+          var position = new kakao.maps.LatLng(place.y, place.x);
             displayInfowindow(place.place_name, position, type);
         };
     })(places, type);
@@ -400,33 +527,43 @@ function displayPagination(pagination) {
     while (paginationEl.hasChildNodes()) {
         paginationEl.removeChild (paginationEl.lastChild);
     }
+    
+    var ul = document.createElement('ul');
+    ul.className = 'pagination px-3';
  
-    for (i=1; i<=pagination.last; i++) {
+    for (i = 1; i <= pagination.last; i++) {
+        var li = document.createElement('li');
+        li.className = 'page-item';
+
         var el = document.createElement('a');
+        el.className = 'page-link rounded-xs bg-dark-dark shadow-l border-0';
         el.href = "#";
         el.innerHTML = i;
- 
-        if (i===pagination.current) {
-            el.className = 'on';
+
+        if (i === pagination.current) {
+            li.className += ' active';
         } else {
-            el.onclick = (function(i) {
-                return function() {
+            el.onclick = (function (i) {
+                return function () {
                     pagination.gotoPage(i);
-                }
+                };
             })(i);
         }
- 
-        fragment.appendChild(el);
+
+        li.appendChild(el);
+        ul.appendChild(li);
     }
+
+    fragment.appendChild(ul);
     paginationEl.appendChild(fragment);
 }
  
 // 검색결과 목록 클릭했을 때 호출되는 함수입니다
 // 인포윈도우에 장소명을 표시합니다
 async function displayInfowindow(title, position, type) {
-	console.log("displayInfowindow type : "+type);
-	console.log("title : "+title);
-	
+  console.log("displayInfowindow type : "+type);
+  console.log("title : "+title);
+  
     var content = '<div style="padding:5px;z-index:1;">' + title + '</div>';
  
     infowindow.setContent(content);
@@ -447,12 +584,12 @@ async function displayInfowindow(title, position, type) {
         var keywordId = type === 'start' ? 'startAddrKeyword' : 'endAddrKeyword';
         var keywordInput = document.getElementById(keywordId);
         if (keywordInput) {
-        	
-        	 if(title == null){       		 
-        		 keywordInput.value = detailAddr;
-        	 } else{
-        		 keywordInput.value = title;
-        	 }
+          
+           if(title == null){            
+             keywordInput.value = detailAddr;
+           } else{
+             keywordInput.value = title;
+           }
  
          // 세션 스토리지에 정보 저장
             sessionStorage.setItem('lat', position.getLat());
@@ -461,7 +598,6 @@ async function displayInfowindow(title, position, type) {
             sessionStorage.setItem('type', type);
             sessionStorage.setItem('callCode', window.callCodeData.callCode);
             
-            //location.href ='https://localhost:8000/callreq/inputAddressMap.jsp';
             location.href = '/callreq/inputAddressMap?userNo='+${user.userNo }+'&callCode='+window.callCodeData.callCode; 
         }
     }
@@ -483,35 +619,35 @@ function searchDetailAddrFromCoords(coords, callback) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-	
-	window.onload = function() {
-	    // 특정 input 엘리먼트를 찾아 포커스 설정
-	    var endAddrKeyword = document.getElementById('endAddrKeyword');
-	    if (endAddrKeyword) {
-	    	endAddrKeyword.focus();
-	    }
-	    
-	    var endAddrKeywordInput = document.getElementById('getCallCode');
-	    var callCode = endAddrKeywordInput.value;
-	    
-	    window.callCodeData = {
-	    		callCode: callCode
-	        };
-	    
-	};
-	
-    var startAddrKeyword = document.getElementById('startAddrKeyword');
+  
+  window.onload = function() {
+      // 특정 input 엘리먼트를 찾아 포커스 설정
+      var endAddrKeyword = document.getElementById('endAddrKeyword');
+      if (endAddrKeyword) {
+        endAddrKeyword.focus();
+      }
+      
+      var callCodeInput = document.getElementById('getCallCode');
+      var callCode = callCodeInput.value;
+      
+      window.callCodeData = {
+          callCode: callCode
+          };
+      
+  };
+  
+  /*  var startAddrKeyword = document.getElementById('startAddrKeyword');
     startAddrKeyword.addEventListener('click', function() {
-    	startAddrKeyword.value = '';
-    	startAddrKeyword.placeholder = '출발지를 입력해주세요';
+      startAddrKeyword.value = '';
+      startAddrKeyword.placeholder = '출발지를 입력해주세요';
      });
-	
-	   var endAddrKeyword = document.getElementById('endAddrKeyword');
-	   endAddrKeyword.addEventListener('click', function() {
-		   endAddrKeyword.value = '';
-		   endAddrKeyword.placeholder = '도착지를 입력해주세요';
-	    });
-	    
+  
+     var endAddrKeyword = document.getElementById('endAddrKeyword');
+     endAddrKeyword.addEventListener('click', function() {
+       endAddrKeyword.value = '';
+       endAddrKeyword.placeholder = '도착지를 입력해주세요';
+      });*/
+      
     // 세션 스토리지에서 데이터 가져오기
     var startAddress = sessionStorage.getItem('startAddress');
     var endAddress = sessionStorage.getItem('endAddress');
@@ -539,27 +675,29 @@ document.addEventListener('DOMContentLoaded', function() {
     var endyInput = document.getElementById('endy');
     
     if (startxInput) {
-    	startxInput.value = startLat;
+      startxInput.value = startLng;
     }
     
     if (startyInput) {
-    	startyInput.value = startLng;
+      startyInput.value = startLat;
     }
     
     if (endxInput) {
-    	endxInput.value = endLat;
+      endxInput.value = endLng;
     }
     
     if (endyInput) {
-    	endyInput.value = endLng;
+      endyInput.value = endLat;
     }
     // sessionStorage에 데이터가 있을 때만 처리
     if (startKeywordInput) {
         startKeywordInput.value = startPlaceName;
+        registerInputEvents(startAddrKeyword, startPlaceName);
     }
     
     if (endKeywordInput) {
         endKeywordInput.value = endPlaceName;
+        registerInputEvents(endAddrKeyword, endPlaceName);
     }
     
     // selectOptions 함수에 전달할 데이터 설정
@@ -576,43 +714,72 @@ document.addEventListener('DOMContentLoaded', function() {
             startLat: startLat,
             startLng: startLng
         };
+    
+
 });
-
-
+function handleButtonClick(Addr, Name, X, Y) {
+    
+    /*alert(likeAddr);
+    alert(likeName);
+    alert(likeX);
+    alert(likeY);*/ 
+    
+    var endAddrKeywordInput = document.getElementById('endAddrKeyword');
+        endAddrKeywordInput.value=Addr;
+        registerInputEvents(endAddrKeyword, Addr);
+    var endxInput = document.getElementById('endx');
+        endxInput.value=X;
+    var endyInput = document.getElementById('endy');
+        endyInput.value=Y;
+        
+        window.selectOptionsEndData = {
+                endAddress: Addr,
+                endPlaceName: Addr,
+                endLng: X,
+                endLat: Y
+            };
+        
+        window.scroll({
+            top: 0,
+            behavior: 'smooth'
+        });
+  }
 function selectOptions(callCode){
-	
-	// 출발/도착지 값 둘다 있는지 체크
+  
+  // 출발/도착지 값 둘다 있는지 체크
 
-	  var startAddrInput = document.getElementById('startAddrKeyword');
+    var startAddrInput = document.getElementById('startAddrKeyword');
     var endAddrInput = document.getElementById('endAddrKeyword');
     
     if(startAddrInput.value == '' || endAddrInput.value == ''){
-    	 alert("출발지와 목적지를 모두 입력해주세요.");
+      var message = '출발지와 목적지를 모두 입력해주세요';
+      messageAlert(message);       
+       return false;
     } else if (startAddrInput.value.trim() !== '' && endAddrInput.value.trim() !== '') {
-	  
-	  // 세션 스토리지에 정보 저장	 
-	  if(window.selectOptionsStartDataMap.startAddress != null){
-		  sessionStorage.setItem('startAddress', window.selectOptionsStartDataMap.startAddress);
-		  sessionStorage.setItem('startPlaceName', window.selectOptionsStartDataMap.startPlaceName);
-		  sessionStorage.setItem('startLat', window.selectOptionsStartDataMap.startLat);
-		  sessionStorage.setItem('startLng', window.selectOptionsStartDataMap.startLng);
-	  } else{
-	      sessionStorage.setItem('startAddress', window.selectOptionsStartData.startAddress);
-	      sessionStorage.setItem('startPlaceName', window.selectOptionsStartData.startPlaceName);
-	      sessionStorage.setItem('startLat', window.selectOptionsStartData.startLat);
-	      sessionStorage.setItem('startLng', window.selectOptionsStartData.startLng);
-	  }
+    
+    // 세션 스토리지에 정보 저장  
+    if(window.selectOptionsStartDataMap.startAddress != null){
+      sessionStorage.setItem('startAddress', window.selectOptionsStartDataMap.startAddress);
+      sessionStorage.setItem('startPlaceName', window.selectOptionsStartDataMap.startPlaceName);
+      sessionStorage.setItem('startLat', window.selectOptionsStartDataMap.startLat);
+      sessionStorage.setItem('startLng', window.selectOptionsStartDataMap.startLng);
+    } else{
+        sessionStorage.setItem('startAddress', window.selectOptionsStartData.startAddress);
+        sessionStorage.setItem('startPlaceName', window.selectOptionsStartData.startPlaceName);
+        sessionStorage.setItem('startLat', window.selectOptionsStartData.startLat);
+        sessionStorage.setItem('startLng', window.selectOptionsStartData.startLng);
+    }
     
     sessionStorage.setItem('endAddress', window.selectOptionsEndData.endAddress);    
     sessionStorage.setItem('endPlaceName', window.selectOptionsEndData.endPlaceName);
     sessionStorage.setItem('endLat', window.selectOptionsEndData.endLat);
     sessionStorage.setItem('endLng', window.selectOptionsEndData.endLng);
 
-	  self.location = "/callreq/selectOptions?userNo="+${user.userNo }+"&callCode="+callCode;
-	}
+    self.location = "/callreq/selectOptions?userNo="+${user.userNo }+"&callCode="+callCode;
+  }
 }
 </script>
-
+<script src="/templates/scripts/bootstrap.min.js"></script>
+<script src="/templates/scripts/custom.js"></script>
 </body>
-
 </html>

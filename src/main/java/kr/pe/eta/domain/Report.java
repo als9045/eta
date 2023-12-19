@@ -16,12 +16,12 @@ public class Report {
 	private int reportNo;
 	private String reportCategory;
 	private String reportDetail;
-	private boolean reportCode;
+	private int reportCode;
 	private int reportUserNo;
 	private int badCallNo;
 	private int badUserNo;
 	private Date reportDate;
 	private String reportRole;
-	private Date regDate;
+	private String regDate;
 
 }

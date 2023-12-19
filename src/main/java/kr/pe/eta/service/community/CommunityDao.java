@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import kr.pe.eta.common.Search;
 import kr.pe.eta.domain.Call;
 import kr.pe.eta.domain.DealReq;
+import kr.pe.eta.domain.ShareReq;
 
 @Mapper
 public interface CommunityDao {
@@ -28,13 +29,36 @@ public interface CommunityDao {
 
 	public void deleteDealReq(int callNo) throws Exception;
 
-	public List<DealReq> getDealList(Search search) throws Exception;
+	public List<DealReq> getDealList() throws Exception;
 
-	public List<Call> getDealCallList(Search search) throws Exception;
+	public List<Call> getDealCallList() throws Exception;
 
-	public int getDealCount(Search search) throws Exception;
+	public int getDealCount() throws Exception;
 
 	public int getDealNo(Map param) throws Exception;
 
 	public void deleteDealReqDriver(int userNo) throws Exception;
+
+	public void deleteDealOther(DealReq dealReq) throws Exception;
+
+	public void addShareReq(ShareReq shareReq) throws Exception;
+
+	public void updateShareCode(int userNo) throws Exception;
+
+	public List<ShareReq> getShareList(Search search) throws Exception;
+
+	public List<Call> getShareCallList(Search search) throws Exception;
+
+	public int getTotalCountPassShare(Search search) throws Exception;
+
+	public ShareReq getShare(int userNo) throws Exception;
+
+	public ShareReq getShareall(int callNo) throws Exception;
+
+	public void deleteShareReq(int callNo) throws Exception;
+
+	public int getShareCount(int callNo) throws Exception;
+
+	public int getShareCallNo(int userNo) throws Exception;
+
 }

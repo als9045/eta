@@ -62,11 +62,11 @@ public class CallReqServiceImpl implements CallReqService {
 		callReqDao.deleteCall(callNo);
 	}
 
-	public int getCallDriver(String carOpt, boolean petOpt, int driverNo) throws Exception {
+	public Integer getCallDriver(String carOpt, boolean petOpt, int driverNo) throws Exception {
 		System.out.println("serviceImpl getCallDriverList carOpt : " + carOpt);
 		System.out.println("serviceImpl getCallDriverList petOpt : " + petOpt);
 		System.out.println("serviceImpl getCallDriverList driverNo : " + driverNo);
-		int callDriverNo = callReqDao.getCallDriver(carOpt, petOpt, driverNo);
+		Integer callDriverNo = callReqDao.getCallDriver(carOpt, petOpt, driverNo);
 
 		return callDriverNo;
 	}
@@ -81,8 +81,9 @@ public class CallReqServiceImpl implements CallReqService {
 		callReqDao.updateShareCode(callNo);
 	}
 
-	public void updateLikeAddr(String likeAddr, String likeName, int userNo, int likeNo) throws Exception {
-		callReqDao.updateLikeAddr(likeAddr, likeName, userNo, likeNo);
+	public void updateLikeAddr(String likeAddr, String likeName, int userNo, int likeNo, double likeX, double likeY)
+			throws Exception {
+		callReqDao.updateLikeAddr(likeAddr, likeName, userNo, likeNo, likeX, likeY);
 	}
 
 	public void deleteLikeAddr(int likeNo, int userNo) throws Exception {
@@ -98,6 +99,13 @@ public class CallReqServiceImpl implements CallReqService {
 		List<Integer> blackNoList = callReqDao.getBlackList(passengerNo);
 
 		return blackNoList;
+	}
+
+	public Call getCall(int callNo) throws Exception {
+
+		Call call = callReqDao.getCall(callNo);
+
+		return call;
 	}
 
 }

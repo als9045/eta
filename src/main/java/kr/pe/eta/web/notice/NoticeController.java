@@ -61,9 +61,9 @@ public class NoticeController {
 		String viewName = "/notice/listNotice.jsp";
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName(viewName);
-		if (search.getCurrentPage() == 0) {
-			search.setCurrentPage(1);
-		}
+
+		search.setCurrentPage(1);
+
 		search.setPageSize(pageSize);
 
 		Map<String, Object> map = noticeService.getNoticeList(search);
@@ -117,7 +117,7 @@ public class NoticeController {
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName(viewName);
 
-		noticeService.addNotice(notice);
+		noticeService.updateNotice(notice);
 
 		return modelAndView;
 	}

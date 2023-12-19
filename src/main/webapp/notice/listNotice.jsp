@@ -4,8 +4,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
+<title>공지사항내역</title>
+<link rel="stylesheet" type="text/css" href="/templates/styles/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="/templates/fonts/bootstrap-icons.css">
+<link rel="stylesheet" type="text/css" href="/templates/styles/style.css">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="/templates/_manifest.json">
+<meta id="theme-check" name="theme-color" content="#FFFFFF">
+<link rel="apple-touch-icon" sizes="180x180" href="/templates/app/icons/icon-192x192.png">
 <style type="text/css">
 	td{
 		height: 100px;
@@ -44,21 +55,27 @@ $(function () {
                     isAjaxInProgress = true;
 	            countCurrentPage();
 	            if($("#currentPage").val() <= ${resultPage.maxPage}){
+	            	let data = {
+	        				
+	        				currentPage : $("#currentPage").val(),
+	        				searchKeyword : $("input:text[name='searchKeyword']").val()
+	        		}
 				
 				$.ajax( 
 						{
 						url : "/notice/json/listNotice/"+$("#currentPage").val() ,
-						method : "GET" ,
+						method : "POST" ,
 						dataType : "json" ,
 						headers : {
 							"Accept" : "application/json",
 							"Content-Type" : "application/json"
 						},
+						data		:  JSON.stringify(data),
 						success : function(noticeList , status) {
 							$.each(noticeList, function (index, notice) {
 					            // 새로운 행 추가
 					            var newRow = '<tr class="appendlist"'+(index+1)+'>' +
-					                '<td>' + (index + 1) + '&nbsp;&nbsp;<a href="/notice/getNotice?noticeNo=' + notice.noticeNo + '">상세보기</a></td>' +
+					                '<td>' + notice.noticeNo + '</td>' +
 					                '<td>' + notice.noticeTitle + '</td>' +
 					                '<td>' + notice.noticeDate + '</td>' +
 					                '</tr>';
@@ -83,27 +100,87 @@ $(function () {
 	    lastScroll = currentScroll;
 
 	});
+	
+	$("a:contains('검색')").on("click", function () {
+		
+		$("form").attr("method","POST").attr("action","/notice/listNotice").submit();
+	}) 
+	$(document).on("click","tr", function () {
+		
+		self.location="/notice/getNotice?noticeNo="+$(this).children().eq(0).text()
+	})
+	
+
 })
 
 </script>
 </head>
-<body>
-<table id ="muhanlist">	
-	<tr>
-		<td>넘버</td>
-		<td>제목</td>
-		<td>날짜</td>
-		
-	</tr>
-	<c:forEach var="noticelist" items="${noticelist }" begin="0" step="1" varStatus="status">
-		<tr class = "list">
-			<td>${status.count }&nbsp;&nbsp;<a href="/notice/getNotice?noticeNo=${noticelist.noticeNo }">상세보기</a></td>
-			<td>${noticelist.noticeTitle }</td>
-			<td>${noticelist.noticeDate }</td>
-		</tr>
-	</c:forEach>
-	<input type="hidden" id="currentPage"name ="currentPage" value=1></br>
-	<a href="../notice/addNotice">공지사항 등록</a>
-</table>
+<body class="theme-light">
+	<form name="detailform">
+		<div id="page" >
+		<jsp:include page="/home/top.jsp" />
+			<div class="page-content header-clear-medium" >
+				<div class="card card-style" style="margin-bottom: 15px;">
+					<div class="content"style="margin-bottom: 9px; ">
+						<!-- <h6 class="font-700 mb-n1 color-highlight">Split Content</h6> -->
+
+						<h1 class="pb-2" style="width: 140px; display: inline-block;">
+							<i class="has-bg rounded-s bi bg-teal-dark bi-list-columns" style="vertical-align:bottom !important; line-height: 0px!important;height: 30px !important;font-size: 30px !important; all:initial; display: inline-block;"></i>&nbsp;&nbsp;공지사항
+						</h1>
+
+					</div>
+				</div>
+
+				<div class="card overflow-visible card-style">
+					<div class="content mb-0">
+						<div class="col-12 mb-4 pb-1" align="right" style="height: 15px">
+						<c:if test="${user.role eq 'admin'}">
+							<a class="btn-full btn bg-blue-dark"
+								href="../notice/addNotice"
+								style="display: inline-block; padding-top: 5px; padding-bottom: 5px; float: left; margin-top: 2px">등록</a>
+						</c:if>
+							<input type="text" class="form-control rounded-xs"
+								style="width: 40%; display: inline-block" name="searchKeyword"
+								value="${!empty search.searchKeyword ? search.searchKeyword : ''}">
+
+
+							<a class="btn btn-xxs border-blue-dark color-blue-dark"
+								style="display: inline-block; padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;margin-left: 5px; ">검색</a>
+						</div>
+
+						<div class="table-responsive">
+							<table class="table color-theme mb-2" id="muhanlist">
+								<thead>
+									<tr>
+										<th scope="col">번호</th>
+										<th scope="col">제목</th>
+										<th scope="col">날짜</th>
+									</tr>
+								</thead>
+								<tbody>
+									<c:forEach var="noticelist" items="${noticelist }" begin="0"
+										step="1" varStatus="status">
+										<tr class="list">
+
+											<td>${noticelist.noticeNo }</td>
+											<td>${noticelist.noticeTitle }</td>
+											<td>${noticelist.noticeDate }</td>
+
+
+										</tr>
+									</c:forEach>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<input type="hidden" id="currentPage" name="currentPage" value=1>
+
+
+
+			</div>
+		</div>
+	</form>
 </body>
 </html>
