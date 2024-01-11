@@ -36,7 +36,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import kr.pe.eta.common.Page;
 import kr.pe.eta.common.Search;
 import kr.pe.eta.domain.User;
 import kr.pe.eta.redis.RedisEntity;
@@ -49,7 +48,6 @@ import kr.pe.eta.service.user.NaveLoginProfile;
 import kr.pe.eta.service.user.NaverToken;
 import kr.pe.eta.service.user.OAuthToken;
 import kr.pe.eta.service.user.UserService;
-import kr.pe.eta.service.user.comfirmEmail;
 
 @Controller
 @RequestMapping("/user/*")
@@ -66,12 +64,6 @@ public class UserController {
 
 	@Autowired
 	private CallReqService callReqService;
-
-	@Autowired
-	private comfirmEmail emailService;
-
-	@Value("${search.pageUnit}")
-	int pageUnit;
 
 	@Value("${search.pageSize}")
 	private int pageSize;
@@ -111,13 +103,10 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "login", method = RequestMethod.GET)
-	public ModelAndView login(ModelAndView mv, HttpSession session) throws Exception {
+	public ModelAndView login(ModelAndView mv) throws Exception {
 
 		System.out.println("/user/login : GET");
-		if (session != null) {
-			System.out.println("세션 삭제하자");
-			session.invalidate(); // 세션을 무효화시킴
-		}
+
 		mv.setViewName("redirect:/user/login.jsp");
 
 		return mv;
@@ -127,7 +116,7 @@ public class UserController {
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	public ModelAndView login(@ModelAttribute("user") User user, HttpSession session) throws Exception {
 
-		System.out.println("USerController/user/login : POST");
+		System.out.println("/user/login : POST");
 		ModelAndView modelAndView = new ModelAndView();
 		System.out.println("user : " + user);
 		User db = userService.getUser(user.getEmail());
@@ -159,6 +148,7 @@ public class UserController {
 			if (result == 1) {
 				// 블록 코드가 false이면 로그인 로직을 타게 하거나 다른 처리를 수행
 				if (user.getEmail().equals(db.getEmail()) && user.getPwd().equals(db.getPwd())) {
+					session.setAttribute("user", db);
 					System.out.println("로그인성공");
 					session.setAttribute("user", db);
 					modelAndView.setViewName("redirect:/home.jsp");
@@ -186,18 +176,13 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "addUser", method = RequestMethod.GET)
-	public ModelAndView addUser(@RequestParam("role") String role, HttpServletRequest request) throws Exception {
+	public ModelAndView addUser(@RequestParam("role") String role) throws Exception {
 		System.out.println("/user/addUser : GET");
 		ModelAndView model = new ModelAndView();
 
-		HttpSession session = request.getSession(false);
-		if (session != null) {
-			System.out.println("세션삭제하자");
-			session.invalidate(); // 세션을 무효화시킴
-		}
 		System.out.println("role :" + role);
 		model.addObject("role", role);
-		model.setViewName("forward:/user/addUser.jsp");
+		model.setViewName("redirect:/user/addUser.jsp");
 
 		return model;
 	}
@@ -212,9 +197,12 @@ public class UserController {
 		System.out.println("money" + user.getMyMoney());
 		System.out.println("role: " + user.getRole());
 		userService.addUser(user);
+		session.setAttribute("user", user);
 		User newuser = userService.getUser(user.getEmail());
-		session.setAttribute("user", newuser);
+		if (user.getRole().equals("passenger")) {
 
+			callReqService.addLikeList(newuser.getUserNo());
+		}
 		System.out.println("방금 만든 회원 : " + userService.getUser(newuser.getEmail()));
 		System.out.println("즐겨찾기 보자 : " + callReqService.getLikeList(newuser.getUserNo()));
 		model.setViewName("forward:/home.jsp");
@@ -227,41 +215,34 @@ public class UserController {
 			@RequestParam(name = "userNo", required = false) Integer userNo, HttpSession session) throws Exception {
 		System.out.println("/user/getUser : GET");
 		ModelAndView model = new ModelAndView();
-
 		User user = null;
 
 		if (email == null) {
-			System.out.println("이메일없음");
 			user = userService.getUsers(userNo);
-			System.out.println("meail : " + user.getMyMoney());
+			System.out.println("돈돈돈 : " + user.getMyMoney());
 		} else {
-			System.out.println("넘버 없음");
 			user = userService.getUser(email);
-			System.out.println("userNo : " + user.getMyMoney());
+			System.out.println("돈돈돈 : " + user.getMyMoney());
 		}
 
 		System.out.println("userInfo = " + user);
 		model.setViewName("forward:/user/getUser.jsp");
 		model.addObject("user", user);
-
+		model.addObject("money", user.getMyMoney());
 		return model;
 	}
 
 	@RequestMapping(value = "getadmin", method = RequestMethod.GET)
-	public ModelAndView updateUserView(@RequestParam("userNo") int userNo,
-			@RequestParam(name = "reportNo", required = false) Integer reportNo, HttpSession session) throws Exception {
+	public ModelAndView updateUserView(@RequestParam("userNo") int userNo, HttpSession session) throws Exception {
 		System.out.println("/user/updateUser : GET");
 		ModelAndView model = new ModelAndView();
 		int result = feedback.getBlockCount(userNo);
 		System.out.println("user info :" + userNo);
 		User info = userService.getUsers(userNo);
 		System.out.println("result : " + result);
-		if (reportNo != null) {
-			model.addObject("reportNo", reportNo);
-		}
+
 		model.addObject("users", info);
 		model.addObject("block", result);
-
 		model.setViewName("forward:/user/getadmin.jsp");
 		return model;
 	}
@@ -272,11 +253,10 @@ public class UserController {
 		ModelAndView model = new ModelAndView();
 		System.out.println("수정한 이름: " + user.getName());
 		userService.updateUser(user);
-		User unewuser = userService.getUsers(user.getUserNo());
-		System.out.println("새로운 정보 ㅣ " + unewuser);
-		session.setAttribute("user", unewuser);
 
-		model.setViewName("redirect:/");
+		session.setAttribute("user", user);
+
+		model.setViewName("forward:/home.jsp");
 		return model;
 	}
 
@@ -285,23 +265,20 @@ public class UserController {
 		System.out.println("/user/updatePwd : GET");
 		ModelAndView model = new ModelAndView();
 
-		model.setViewName("forward:/user/updatepwd.jsp");
+		model.setViewName("redirect:/user/updatepwd.jsp");
 
 		return model;
 
 	}
 
 	@RequestMapping(value = "updatePwd", method = RequestMethod.POST)
-	public ModelAndView updatePwd(@ModelAttribute("user") User user, HttpSession session) throws Exception {
-		System.out.println("/user/updatePwd : POST 아니 업데이트 pwd");
+	public ModelAndView updatePwd(@ModelAttribute("user") User user) throws Exception {
+		System.out.println("/user/updatePwd : POST");
 		ModelAndView model = new ModelAndView();
-		System.out.println("user :" + user);
+
 		userService.updatePwd(user);
-		User newUser = userService.getUser(user.getEmail());
 
-		session.setAttribute("user", newUser);
-
-		model.setViewName("redirect:/");
+		model.setViewName("forward:/user/home.jsp");
 		return model;
 
 	}
@@ -317,7 +294,7 @@ public class UserController {
 		return model;
 	}
 
-	@RequestMapping(value = "listUser")
+	@RequestMapping(value = "listUser", method = RequestMethod.GET)
 	public ModelAndView getUserList(@ModelAttribute("search") Search search) throws Exception {
 		System.out.println("/user/listUser : POST");
 		if (search.getCurrentPage() == 0) {
@@ -329,21 +306,19 @@ public class UserController {
 		ModelAndView model = new ModelAndView();
 
 		Map<String, Object> map = userService.getUserList(search);
-		System.out.println("search :" + search);
-		System.out.println("map :" + map);
+		System.out.println("map");
+
 		List<User> userList = ((List<User>) map.get("list")).stream().filter(user -> !user.getRole().equals("admin"))
 				.collect(Collectors.toList());
-		System.out.println("userList :" + userList);
-		Page resultPage = new Page(search.getCurrentPage(), ((Integer) map.get("totalCount")).intValue(), pageUnit,
-				pageSize);
+
 		User user = new User();
 
 		System.out.println("code" + user.isBlockCode());
 		model.addObject("list", userList);
 		model.addObject("passenger", map.get("passengertotalCount"));
 		model.addObject("driver", map.get("drivertotalCount"));
-		model.setViewName("/user/listUser.jsp");
-		model.addObject("resultPage", resultPage);
+		model.setViewName("forward:/user/listUser.jsp");
+		model.addObject("search", search);
 
 		return model;
 
@@ -543,22 +518,6 @@ public class UserController {
 		String email = naverProfile.getResponse().getEmail();
 		User user = userService.getUser(email);
 		if (user != null) {
-
-			Point location = userService.calculateRandomLocation();
-			double X = location.getX();
-			System.out.println("X : " + X);
-			double Y = location.getY();
-			System.out.println("Y : " + Y);
-
-			if (user.getRole().equals("driver")) {
-				RedisEntity redisEntity = new RedisEntity();
-				String userNo = String.valueOf(user.getUserNo());
-				redisEntity.setId(userNo);
-				redisEntity.setCurrentX(X);
-				redisEntity.setCurrentY(Y);
-				redisService.addUser(redisEntity);
-			}
-
 			session.setAttribute("user", user);
 			model.setViewName("redirect:/home.jsp");
 		} else {
@@ -588,15 +547,11 @@ public class UserController {
 	}
 
 	@GetMapping("/naver-login")
-	public void naverLogin(@RequestParam("role") String role, HttpServletRequest request, HttpServletResponse response)
+	public void naverLogin(HttpServletRequest request, HttpServletResponse response)
 			throws MalformedURLException, UnsupportedEncodingException, URISyntaxException {
-
 		System.out.println("naver-login");
-		System.out.println("role : " + role);
 		String url = loginService.getNaverAuthorizeUrl("authorize");
 		try {
-			HttpSession session = request.getSession();
-			session.setAttribute("role", role);
 			response.sendRedirect(url);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -609,14 +564,14 @@ public class UserController {
 			throws MalformedURLException, UnsupportedEncodingException, URISyntaxException {
 		System.out.println("kakao-logout");
 		System.out.println("token : " + access_token);
-		ModelAndView model = new ModelAndView();
+
+		ModelAndView modelAndView = new ModelAndView();
 
 		if (access_token == null) {
 			try {
 				// access_token이 null인 경우 Kakao 로그아웃 URL 생성 및 리다이렉트
 				String url = loginService.kakaoLoOut(request1);
-				model.setViewName("redirect:/home.jsp");
-
+				modelAndView.setViewName("redirect:/home.jsp");
 			} catch (IOException e) {
 				e.printStackTrace(); // 또는 로깅 등의 적절한 예외 처리 로직을 추가할 수 있습니다.
 			}
@@ -624,10 +579,10 @@ public class UserController {
 		} else {
 			// access_token이 null이 아닌 경우 Naver 로그아웃 URL 생성 및 리다이렉트
 			String url = loginService.naverLoOut(access_token, request1, response);
-			model.setViewName("redirect:/home.jsp");
+			modelAndView.setViewName("redirect:/home.jsp");
 		}
 
-		return model;
+		return modelAndView;
 	}
 
 	@GetMapping("/auth/kakao/logout")
@@ -641,60 +596,16 @@ public class UserController {
 		return model;
 	}
 
-	@GetMapping("/searchPwd")
-	public ModelAndView searchPwd(@RequestParam(required = false) String code,
-			@RequestParam(required = false) String email, @RequestParam(required = false) String phone,
-			@RequestParam(required = false) String message, ModelAndView model) {
-		// 코드를 모델에 추가하여 JSP에서 사용할 수 있도록 함
-		System.out.println("code : " + code);
-		System.out.println("email : " + email);
-		System.out.println("phone : " + phone);
-		System.out.println("message : " + message);
-
-		if (code != null) {
-			model.addObject("code", code);
-			model.addObject("email", email);
-			model.setViewName("forward:/user/searchPwd.jsp");
-		} else {
-			model.addObject("message", message);
-			model.addObject("phone", phone);
-			model.setViewName("forward:/user/searchPwd.jsp");
-		}
-
-		// searchPwd.jsp로 이동
-		return model;
-	}
-
-	@GetMapping("/searchAnswer")
-	public ModelAndView searchAnswer(@RequestParam(required = false) String email,
-			@RequestParam(required = false) String phone, ModelAndView model) throws Exception {
-		// 코드를 모델에 추가하여 JSP에서 사용할 수 있도록 함
-		System.out.println("email : " + email);
-
-		if (email != null) {
-			User emailinfo = userService.getUser(email);
-			System.out.println("info : " + emailinfo);
-			model.addObject("email", emailinfo);
-			model.setViewName("forward:/user/searchAnswer.jsp");
-		} else {
-			User phoneInfo = userService.getUserPhone(phone);
-			System.out.println("phoneInfo : " + phoneInfo);
-			model.addObject("phone", phoneInfo);
-			model.setViewName("forward:/user/searchAnswer.jsp");
-		}
-		// searchPwd.jsp로 이동
-		return model;
-	}
-
-	@RequestMapping(value = "/sendEmail", method = RequestMethod.POST)
-	@ResponseBody
-	public String mailConfirm(@RequestParam String email) throws Exception {
-		System.out.println("이메일 인증이다");
-		System.out.println("이메일 : " + email);
-
-		String code = emailService.sendSimpleMessage(email);
-		System.out.println("인증코드 : " + code);
-		return code;
-	}
+//	@GetMapping("naverLogout")
+//	public void naverLogout(@RequestParam("token") String access_token, HttpServletResponse response) throws Exception {
+//		System.out.println("token : " + access_token);
+//		String url = loginService.naverLoOut(access_token);
+//		try {
+//			response.sendRedirect(url);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//	}
 
 }

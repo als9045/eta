@@ -17,9 +17,7 @@ public class Block {
 	private boolean blockCode;
 	private Date blockDate;
 	private Date unblockDate;
-	private String unblockDateStr;
 	private int blockOpt;
 	private int blockCount;
-	private int reportNo;
 
 }

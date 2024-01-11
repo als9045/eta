@@ -22,8 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpSession;
 import kr.pe.eta.common.Search;
-import kr.pe.eta.domain.Block;
-import kr.pe.eta.domain.Report;
 import kr.pe.eta.domain.User;
 import kr.pe.eta.redis.RedisService;
 import kr.pe.eta.service.callreq.CallReqService;
@@ -34,8 +32,6 @@ import kr.pe.eta.service.user.LoginService;
 import kr.pe.eta.service.user.UserService;
 import net.nurigo.sdk.NurigoApp;
 import net.nurigo.sdk.message.model.Message;
-import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
-import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 
 @RestController
@@ -72,7 +68,7 @@ public class UserRestController {
 
 	public UserRestController(RedisService redisService) {
 		System.out.println(this.getClass());
-		this.messageService = NurigoApp.INSTANCE.initialize("NCSLF0VBHEZH5BP2", "W4UW6YM1XEG4QSGEY2MDAHY7ZS5DPQOL",
+		this.messageService = NurigoApp.INSTANCE.initialize("NCSMOXVRHXMS5UNM", "ACJ94REWVJTBOWKDKHSM3NBX4KZF1ERP",
 				"https://api.coolsms.co.kr");
 		this.redisService = redisService;
 	}
@@ -80,20 +76,20 @@ public class UserRestController {
 	@GetMapping("/send-one")
 	public Map<String, Object> sendOne(@RequestParam("phone") String phone) {
 		System.out.println("메시지 전송");
-		System.out.println("num :" + phone);
+
 		Random rand = new Random();
 		String numStr = "";
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 4; i++) {
 			String ran = Integer.toString(rand.nextInt(10));
 			numStr += ran;
 		}
 
 		Message message = new Message();
-		message.setFrom("01043990629");
-		message.setTo(phone);
-		message.setText("[인증번호 안내] 입력하셔야할 인증번호는[" + numStr + "]입니다");
+//		message.setFrom("01066779045");
+//		message.setTo(phone);
+//		message.setText("[인증번호 안내] 입력하셔야할 인증번호는[" + numStr + "]입니다");
 
-		SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
+//		SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
 
 		// Create a map to hold multiple values
 		Map<String, Object> resultMap = new HashMap<>();
@@ -111,23 +107,6 @@ public class UserRestController {
 
 		System.out.println("nickName==" + nickName);
 		boolean duplication = userService.dupNickname(nickName);
-		String ment = null;
-		if (duplication == true) {
-			ment = "1";
-		} else {
-			ment = "2";
-		}
-		System.out.println("result===" + duplication);
-
-		return ment;
-	}
-
-	@RequestMapping(value = "dupPhone", method = RequestMethod.GET)
-	public String dupPhone(@RequestParam("phone") String phone) throws Exception {
-		System.out.println("/Json/phone : GET");
-
-		System.out.println("phone==" + phone);
-		boolean duplication = userService.dupPhone(phone);
 		String ment = null;
 		if (duplication == true) {
 			ment = "1";
@@ -189,7 +168,9 @@ public class UserRestController {
 		System.out.println("lists-=====" + userNo);
 		System.out.println("lists-=====" + lists);
 
+		map.put("lists", lists);
 		map.put("list", map.get("list"));
+		map.put("userNo", userNo);
 
 		return map;
 	}
@@ -228,7 +209,7 @@ public class UserRestController {
 		String success = null;
 		String fail = null;
 		String ment = null;
-		Map<String, Object> map = new HashMap<String, Object>();
+
 		// 블락테이블 여부를 확인할 수 있는거 해서 있으면 메세지 띄우고
 		// 없으면 그냥 로그인 되는걸로 블락여부 로긍여부 만
 		if (db.isBlockCode()) {
@@ -244,13 +225,7 @@ public class UserRestController {
 				}
 			} else {
 				System.out.println("실패");
-				Block block = feedback.getBlock(db.getUserNo());
-				Report report = feedback.getReportByReportNo(block.getReportNo());
-				System.out.println(block);
-				System.out.println(report);
-				map.put("block", block);
-				map.put("report", report);
-				ment = "비활성화 계정";
+				ment = "비활성화 상태입니다.";
 			}
 		} else {
 			if (user.getEmail().equals(db.getEmail()) && user.getPwd().equals(db.getPwd())) {
@@ -258,10 +233,10 @@ public class UserRestController {
 				success = "로그인 성공";
 			} else {
 				System.out.println("실패");
-				fail = "회원정보를 확인해주새요.";
+				fail = "로그인 실패";
 			}
 		}
-
+		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("success", success);
 		map.put("fail", fail);
 		map.put("ment", ment);

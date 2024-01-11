@@ -35,7 +35,7 @@ public interface CommunityDao {
 
 	public int getDealCount() throws Exception;
 
-	public Integer getDealNo(Map param) throws Exception;
+	public int getDealNo(Map param) throws Exception;
 
 	public void deleteDealReqDriver(int userNo) throws Exception;
 
@@ -59,14 +59,6 @@ public interface CommunityDao {
 
 	public int getShareCount(int callNo) throws Exception;
 
-	public ShareReq getShareCallNo(int userNo) throws Exception;
-
-	public void deleteShareOther(int userNo) throws Exception;
-
-	public List<ShareReq> getSharePassengerList(Map param) throws Exception;
-
-	public int getShareReqPassenger(int callNo) throws Exception;
-
-	public List<ShareReq> getSharePassengerallList(int callNo) throws Exception;
+	public int getShareCallNo(int userNo) throws Exception;
 
 }

@@ -18,8 +18,6 @@ public interface UserService {
 	// 내정보확인
 	public User getUsers(int userNo) throws Exception;
 
-	public User getUserPhone(String phone) throws Exception;
-
 	// 회원리스트
 	public Map<String, Object> getUserList(Search search) throws Exception;
 
@@ -31,8 +29,6 @@ public interface UserService {
 
 	// 이메일 중복체크
 	public boolean dupEmail(String eamil) throws Exception;
-
-	public boolean dupPhone(String Phone) throws Exception;
 
 	// 닉네임 중복체크
 	public boolean dupNickname(String nickName) throws Exception;

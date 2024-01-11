@@ -108,18 +108,6 @@ public class CommunityRestController {
 		return callNo;
 	}
 
-	@RequestMapping(value = "getDeal", method = RequestMethod.GET)
-	public Call getDeal(HttpSession session) throws Exception {
-
-		System.out.println("/json/getCall GET");
-
-		int userNo = ((User) session.getAttribute("user")).getUserNo();
-		int callNo = communityService.getCallNo(userNo, "D");
-		Call call = callReqService.getCall(callNo);
-
-		return call;
-	}
-
 	@RequestMapping(value = "deleteDealOther", method = RequestMethod.POST)
 	public ResponseEntity<DealReq> deleteDealOther(@RequestBody DealReq dealReq) throws Exception {
 		System.out.println("/json/deleteDealOther");
@@ -168,53 +156,27 @@ public class CommunityRestController {
 		return call;
 	}
 
-	@RequestMapping(value = "deleteShareReqOther", method = RequestMethod.GET)
-	public User deleteShareReqOther(HttpSession session) throws Exception {
-
-		System.out.println("/json/deleteShareReqOther GET");
-
-		User user = (User) session.getAttribute("user");
-		int userNo = user.getUserNo();
-		communityService.deleteShareOther(userNo);
-		communityService.updateShareCode(userNo);
-		user = userService.getUser(user.getEmail());
-		session.setAttribute("user", user);
-
-		return user;
-	}
-
 	@RequestMapping(value = "getChat")
 	public Message getChat() throws Exception {
 		return new Message();
 	}
 
 	@RequestMapping(value = "getShareCallNo")
-	public ShareReq getShareCallNo(HttpSession session) throws Exception {
+	public String getShareCallNo(HttpSession session) throws Exception {
 
 		User user = (User) session.getAttribute("user");
 		int userNo = user.getUserNo();
 
-		ShareReq shareReq = communityService.getShareCallNo(userNo);
-
-		/*
-		 * if (user.isShareCode()) { shareReq = communityService.getShareCallNo(userNo);
-		 * }
-		 */
-
-		return shareReq;
-	}
-
-	@RequestMapping(value = "getShareReqPassenger")
-	public String getShareReqPassenger(@RequestParam int callNo) throws Exception {
-
-		System.out.println("/json/getShareReqPassenger GET");
-
-		int userNo = communityService.getShareReqPassenger(callNo);
+		int callNo = 0;
+		if (user.isShareCode()) {
+			callNo = communityService.getShareCallNo(userNo);
+		}
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		// Java 객체를 JSON 문자열로 변환
-		String jsonString = objectMapper.writeValueAsString(userNo);
+		String jsonString = objectMapper.writeValueAsString(callNo);
 		return jsonString;
 	}
+
 }

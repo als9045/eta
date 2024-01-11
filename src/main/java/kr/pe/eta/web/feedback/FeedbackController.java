@@ -25,7 +25,6 @@ import kr.pe.eta.domain.Report;
 import kr.pe.eta.domain.Star;
 import kr.pe.eta.domain.User;
 import kr.pe.eta.service.feedback.FeedbackService;
-import kr.pe.eta.service.user.UserService;
 
 @Controller
 @RequestMapping("/feedback/*")
@@ -33,9 +32,6 @@ public class FeedbackController {
 
 	@Autowired
 	private FeedbackService feedbackService;
-
-	@Autowired
-	private UserService userService;
 
 	public FeedbackController() {
 		System.out.println(this.getClass());
@@ -58,7 +54,7 @@ public class FeedbackController {
 		// int callNo = feedbackService.getCallNo(user);
 		int driverNo = feedbackService.getDriverNoByCallNo(callNo);
 		Star star = Star.builder().callNo(callNo).driverNo(driverNo).build();
-		session.setAttribute("user", userService.getUsers(user.getUserNo()));
+
 		modelAndView.addObject("star", star);
 		return modelAndView;
 	}
@@ -222,7 +218,7 @@ public class FeedbackController {
 
 		} else {
 			System.out.println("합승임");
-			blacklistList = feedbackService.getBlacklistList(callNo);
+			blacklistList = feedbackService.getBlacklistList(1001);
 
 			for (int i = 0; i < blacklistList.size(); i++) {
 				feedbackService.getBlacklist(blacklistList.get(i));

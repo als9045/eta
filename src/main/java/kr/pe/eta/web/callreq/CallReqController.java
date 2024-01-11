@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -127,7 +128,6 @@ public class CallReqController {
 
 			model.addAttribute("myMoney", myMoney);
 			model.addAttribute("callCode", callCode);
-			model.addAttribute("hasNoDataException", true);
 
 			return "forward:/callreq/selectOptions.jsp";
 
@@ -181,11 +181,6 @@ public class CallReqController {
 					} else {
 						System.out.println("blackList 가 아닌 driver : " + callDriverNoList.get(i));
 						driverNoResult.add(callDriverNoList.get(i));
-						String driverNo = String.valueOf(callDriverNoList.get(i));
-						AddCallEntity addCallEntity = new AddCallEntity();
-						addCallEntity.setId(driverNo);
-						addCallEntity.setCallNo(callNo);
-						redisService.addCall(addCallEntity);
 					}
 				}
 			}
@@ -201,28 +196,13 @@ public class CallReqController {
 			}
 		}
 
-		if (driverNoResult.isEmpty()) {
+		System.out.println("driverNoResult : " + driverNoResult);
+		System.out.println("callNo : " + callNo);
+		model.addAttribute("call", call);
+		model.addAttribute("callNo", callNo);
+		model.addAttribute("driverNoResult", driverNoResult);
 
-			System.out.print("driverNoResult 가 없음");
-
-			int userNo = call.getUserNo();
-			String callCode = call.getCallCode();
-			int myMoney = payService.getMyMoney(userNo);
-
-			model.addAttribute("myMoney", myMoney);
-			model.addAttribute("callCode", callCode);
-			model.addAttribute("hasNoDataException", true);
-
-			return "forward:/callreq/selectOptions.jsp";
-
-		} else {
-			System.out.println("driverNoResult : " + driverNoResult);
-			System.out.println("callNo : " + callNo);
-			model.addAttribute("call", call);
-			model.addAttribute("callNo", callNo);
-			model.addAttribute("driverNoResult", driverNoResult);
-			return "forward:/callreq/searchCall.jsp";
-		}
+		return "forward:/callreq/searchCall.jsp";
 	}
 
 	@RequestMapping(value = "deleteCall", method = RequestMethod.GET)
@@ -269,32 +249,40 @@ public class CallReqController {
 	}
 
 	@RequestMapping(value = "updateLikeAddr", method = RequestMethod.POST)
-	// public String updateLikeAddr(@ModelAttribute @Valid Like like, BindingResult
-	// result,
-	// @RequestParam("userNo") int userNo, Model model) throws Exception {
-	public String updateLikeAddr(@ModelAttribute @Valid Like like, @RequestParam("userNo") int userNo, Model model)
-			throws Exception {
+	public String updateLikeAddr(@ModelAttribute @Valid Like like, BindingResult result,
+			@RequestParam("userNo") int userNo, Model model) throws Exception {
 
-		System.out.println("/callreq/updateHomeAddr");
-		System.out.println("like : " + like);
-		System.out.println("userNo : " + userNo);
-		// userNo = "1004";
-		// Business Logic
+		if (result.hasErrors()) {
 
-		String likeAddr = like.getLikeAddr();
-		String likeName = like.getLikeName();
-		int likeNo = like.getLikeNo();
-		double likeX = like.getLikeX();
-		double likeY = like.getLikeY();
+			List<Like> likeList = callReqService.getLikeList(userNo); // 즐겨찾기 리스트
 
-		callReqService.updateLikeAddr(likeAddr, likeName, userNo, likeNo, likeX, likeY);
+			// Model 과 View 연결
+			model.addAttribute("likeList", likeList);
 
-		List<Like> likeList = callReqService.getLikeList(userNo); // 즐겨찾기 리스트
+			return "forward:/callreq/likeAddrList.jsp";
+		} else {
 
-		// Model 과 View 연결
-		model.addAttribute("likeList", likeList);
+			System.out.println("/callreq/updateHomeAddr");
+			System.out.println("like : " + like);
+			System.out.println("userNo : " + userNo);
+			// userNo = "1004";
+			// Business Logic
 
-		return "forward:/callreq/likeAddrList.jsp";
+			String likeAddr = like.getLikeAddr();
+			String likeName = like.getLikeName();
+			int likeNo = like.getLikeNo();
+			double likeX = like.getLikeX();
+			double likeY = like.getLikeY();
+
+			callReqService.updateLikeAddr(likeAddr, likeName, userNo, likeNo, likeX, likeY);
+
+			List<Like> likeList = callReqService.getLikeList(userNo); // 즐겨찾기 리스트
+
+			// Model 과 View 연결
+			model.addAttribute("likeList", likeList);
+
+			return "forward:/callreq/likeAddrList.jsp";
+		}
 	}
 
 	@RequestMapping(value = "deleteLikeAddr", method = RequestMethod.GET)

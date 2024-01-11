@@ -70,8 +70,4 @@ public interface FeedbackDao {
 	public List<Report> getShareReport(Report report) throws Exception;
 
 	public int addBlockCode(Block block) throws Exception;
-
-	public Block getBlock(int userNo) throws Exception;
-
-	public Report getReportByReportNo(int reportNo) throws Exception;
 }

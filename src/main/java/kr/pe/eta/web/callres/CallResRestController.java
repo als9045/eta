@@ -9,7 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpSession;
@@ -42,27 +41,13 @@ public class CallResRestController {
 	@Value("${search.pageUnit}")
 	int pageUnit;
 
-	@RequestMapping(value = "listCallRecord/{currentpage}")
-	public List<Notice> listCallRecord(@RequestBody Search search, @RequestParam("month") String month)
-			throws Exception {
-		System.out.println("/callRes/json/listRecord : GET/POST");
-
-		search.setPageSize(pageSize);
-
-		Map<String, Object> map = callResService.getCallResList(search, month);
-		List<Notice> calllist = (List<Notice>) map.get("list");
-
-		return calllist;
-	}
-
 	@RequestMapping(value = "listRecord/{currentpage}")
-	public List<Notice> listRecord(@RequestBody Search search, HttpSession session, String month) throws Exception {
+	public List<Notice> listRecord(@RequestBody Search search) throws Exception {
 		System.out.println("/callRes/json/listRecord : GET/POST");
-		int userNo = ((User) session.getAttribute("user")).getUserNo();
 
 		search.setPageSize(pageSize);
 
-		Map<String, Object> map = callResService.getRecordList(search, userNo, month);
+		Map<String, Object> map = callResService.getCallResList(search);
 		List<Notice> calllist = (List<Notice>) map.get("list");
 
 		return calllist;
@@ -82,7 +67,6 @@ public class CallResRestController {
 	@RequestMapping(value = "deleteRequest/{callNo}")
 	public void deleteRequest(@PathVariable int callNo, Model model, HttpSession session) throws Exception {
 		int userNo = ((User) session.getAttribute("user")).getUserNo();
-		System.out.println(callNo);
 		String driverNo = String.valueOf(userNo);
 		AddCallEntity deleteEntity = new AddCallEntity();
 		deleteEntity.setCallNo(callNo);

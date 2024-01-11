@@ -1,8 +1,5 @@
 package kr.pe.eta.service.community.impl;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,35 +77,24 @@ public class CommunityServiceImpl implements CommunityService {
 
 	@Override
 	public Map<String, Object> getDealList() throws Exception {
-		List<DealReq> list = communityDao.getDealList();
+		List<DealReq> dealList = communityDao.getDealList();
 		List<Call> callList = communityDao.getDealCallList();
-		List<DealReq> dealList = new ArrayList<>();
+		int totalCount = communityDao.getDealCount();
 		Map<String, Object> map = new HashMap<String, Object>();
-
-		for (int i = 0; i < list.size(); i++) {
-			DealReq listItem = list.get(i);
-			String callDate = callList.get(i).getCallDate();
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-			LocalDateTime parsedTime = LocalDateTime.parse(callDate, formatter);
-			LocalDateTime newTime = parsedTime.plusMinutes(10);
-			String limitTime = newTime.format(formatter);
-			listItem.setLimitTime(limitTime);
-			dealList.add(listItem);
-		}
-
 		map.put("dealList", dealList);
 		map.put("callList", callList);
+		map.put("totalCount", totalCount);
 		return map;
 	}
 
 	@Override
-	public Integer getDealNo(int userNo, String callCode) throws Exception {
+	public int getDealNo(int userNo, String callCode) throws Exception {
 
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("userNo", userNo);
 		param.put("callCode", callCode);
 
-		Integer callNo = communityDao.getDealNo(param);
+		int callNo = communityDao.getDealNo(param);
 		return callNo;
 	}
 
@@ -167,29 +153,7 @@ public class CommunityServiceImpl implements CommunityService {
 	}
 
 	@Override
-	public ShareReq getShareCallNo(int userNo) throws Exception {
+	public int getShareCallNo(int userNo) throws Exception {
 		return communityDao.getShareCallNo(userNo);
-	}
-
-	public void deleteShareOther(int userNo) throws Exception {
-		communityDao.deleteShareOther(userNo);
-	}
-
-	public List<ShareReq> getSharePassengerList(int callNo, String callStateCode) throws Exception {
-
-		Map<String, Object> param = new HashMap<String, Object>();
-		param.put("callNo", callNo);
-		param.put("callStateCode", callStateCode);
-
-		return communityDao.getSharePassengerList(param);
-	}
-
-	public int getShareReqPassenger(int callNo) throws Exception {
-		return communityDao.getShareReqPassenger(callNo);
-	}
-
-	@Override
-	public List<ShareReq> getSharePassengerallList(int callNo) throws Exception {
-		return communityDao.getSharePassengerallList(callNo);
 	}
 }

@@ -45,10 +45,10 @@ public class CallResServiceImpl implements CallResService {
 	}
 
 	@Override
-	public Map<String, Object> getRecordList(Search search, int userNo, String month) throws Exception {
+	public Map<String, Object> getRecordList(Search search, int userNo) throws Exception {
 		// TODO Auto-generated method stub
 		System.out.println(search);
-		List<Object> list = callResDao.getRecordList(search, userNo, month);
+		List<Object> list = callResDao.getRecordList(search, userNo);
 		System.out.println(list);
 		int totalCount = callResDao.getTotalCount(search);
 
@@ -85,9 +85,9 @@ public class CallResServiceImpl implements CallResService {
 	}
 
 	@Override
-	public Map<String, Object> getCallResList(Search search, String month) throws Exception {
+	public Map<String, Object> getCallResList(Search search) throws Exception {
 		// TODO Auto-generated method stub
-		List<Object> list = callResDao.getCallResList(search, month);
+		List<Object> list = callResDao.getCallResList(search);
 		System.out.println(list);
 		int totalCount = callResDao.getTotalCount(search);
 		System.out.println(totalCount);

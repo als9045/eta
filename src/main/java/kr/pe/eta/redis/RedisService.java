@@ -98,7 +98,7 @@ public class RedisService {
 		if (result.isPresent()) {
 			return result.get();
 		} else {
-			return null;
+			throw new RuntimeException("Database has no Data");
 		}
 	}
 
