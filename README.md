@@ -7,7 +7,7 @@ eTa는 택시 서비스의 기본 요금 인상으로 인해 부담을 느끼는
 
 <h3 align="left">프로젝트 발표</h3>
 <p align="left">
-<a href="https://url.kr/6t45he" target="_blank">
+<a href="https://www.youtube.com/watch?v=zSIsiJlZb5U" target="_blank">
   <img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/youtube.svg" alt="dev-kim" height="30" width="40" />
 </a>
 
