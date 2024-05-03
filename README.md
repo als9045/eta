@@ -33,7 +33,7 @@ https://zrr.kr/yxPU
 - 기타: Kakao Map API, Kakao login, Naver login, Portone, Coolsms, Kakao mobility, Naver Cloud
         Loda-Balencer, Server(Ubuntu20), Nacl, Global DNS, CDN+, SUbnet, Auto Scaling, Naver Sense
   
-## 내가 개발한시스템
+## 내가 개발한 시스템
 - 회원관리 시스템을 맡아 개발하였습니다.
 - 회원가입, 정보수정, 회원삭제, 비밀번호, 이메일 찾기 기능을 프론트엔드와 백엔드 모두 개발하였습니다. 
 - 제가 맡은 회원관리 시스템에는 Kakao, Naver Login, PortOne, CoolSMS, SMPT를 사용하여 개발했습니다.
