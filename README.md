@@ -31,7 +31,15 @@ https://zrr.kr/yxPU
 - 데이터베이스: MongoDB, Oracle, redis
 - Tool & CI/CD : GitHub, docker, Maven, eclips, JUnit, SQLDeveloper, Jenkins
 - 기타: Kakao Map API, Kakao login, Naver login, Portone, Coolsms, Kakao mobility, Naver Cloud
-        Loda-Balencer, Server(Ubuntu20), Nacl, Global DNS, CDN+, SUbnet, Auto Scaling, Naver Sense  
-
+        Loda-Balencer, Server(Ubuntu20), Nacl, Global DNS, CDN+, SUbnet, Auto Scaling, Naver Sense
+  
+## 내가 개발한시스템
+- 회원관리 시스템을 맡아 개발하였습니다.
+- 회원가입, 정보수정, 회원삭제, 비밀번호, 이메일 찾기 기능을 프론트엔드와 백엔드 모두 개발하였습니다. 
+- 제가 맡은 회원관리 시스템에는 Kakao, Naver Login, PortOne, CoolSMS, SMPT를 사용하여 개발했습니다.
+- 간편 로그인이 가능하도록 Kakao, Naver Login API를 사용하였습니다
+- 전화번호 문자를 통해 본인인증을 하도록 CoolSMS API를 사용하였습니다.
+- 예금주 확인을 위해 PortOne API를 사용하였습니다.
+- 비밀번호 찾기를 위해서는 SMTP를 사용하여 이메일을 통해 비밀번호를 찾을 수 있게 하였습니다.
 
 
