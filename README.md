@@ -1,4 +1,4 @@
-![header](https://capsule-render.vercel.app/api?type=rounded&color=gradient&text=%Welcome😊%20&height=300&fontSize=100)
+![header](https://capsule-render.vercel.app/api?type=rounded&color=gradient&text=%Welcome😊%20&height=150&fontSize=80)
 
 
 ## 프로젝트 소개
