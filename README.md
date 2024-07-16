@@ -38,6 +38,21 @@ eTa는 택시 서비스의 기본 요금 인상으로 인해 부담을 느끼는
 - 예금주 확인을 위해 PortOne API를 사용하였습니다.
 - 비밀번호 찾기를 위해서는 SMTP를 사용하여 이메일을 통해 비밀번호를 찾을 수 있게 하였습니다.
 
+## 경험한 에러
+
+- Cause: java.sql.SQLIntegrityConstraintViolationException → 무결성 제약조건
+- 카카오톡 로그인 API적용 중 Jackson 라이브러리가 JSON 데이터를 Java 객체로 변환하는 과정에서 에러 발생 (com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException:)
+- JSON 데이터의 특정 필드가 Java 클래스에서 인식되지 않아 에러 발생 (ohttp://m.fasterxml.jackson.databind.exc.UnrecognizedPropertyException)
+- 포트원 API JSON 문자열을 JsonNode 객체로 파싱
+
+## 에러 해결 -> [정리 보기](https://als9045.tistory.com/entry/eTa-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%A7%84%ED%96%89-%EC%A4%91-%EC%97%90%EB%9F%AC-%EB%AA%A8%EC%9D%8C)
+
+- PL/SQL 블록 사용
+- 화면에서 카카오로부터 응답받은 json 확인
+- console에서 나온 json을 필드명 변경
+- ObjectMapper의 readTree와 JsonNode사용
+
+  
 ## 프로젝트 개발 중 고민
 
 - 처음 적용해 보는 각각의 API
