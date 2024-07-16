@@ -63,7 +63,7 @@ eTa는 택시 서비스의 기본 요금 인상으로 인해 부담을 느끼는
 ## 고민 해결
 
 - UrlComponents, RestTemplate. HttpHeaders, MultiValueMap, ResponseEntity, ObjectMapper
-  사용하여 Resful API 적용 -> [블로그 정리](https://zrr.kr/hgfl)
+  사용 REST API 적용 -> [블로그 정리](https://zrr.kr/hgfl)
 - 직접 이미지 삽입 후 이미지 클릭 시 코드 전달 되도록 개발 -> [블로그 정리](https://zrr.kr/93NG)
 - 문자 인증을 위해 다른 API인 CoolSMS 적용 -> [블로그 정리](https://zrr.kr/Zotg)
   
