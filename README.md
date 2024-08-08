@@ -14,9 +14,7 @@ eTa는 택시 서비스의 기본 요금 인상으로 인해 부담을 느끼는
 
 ## <h3>포트폴리오</h3>
 
-[eTa 포트폴리오](https://zrr.kr/yxPU)
-
-
+[eTa](https://zrr.kr/yxPU)
 
 ## 주요 기능
 
@@ -28,12 +26,12 @@ eTa는 택시 서비스의 기본 요금 인상으로 인해 부담을 느끼는
 - 차종 및 반려동물 옵션
 - 리뷰 및 평가 시스템
 
-## 내가 개발한 시스템
+## 담당 기능
 
-- 회원관리 시스템
+- 회원관리, Home 화면
 - 회원가입, 정보수정, 회원삭제, 비밀번호, 이메일 찾기 기능을 프론트엔드와 백엔드 모두 개발하였습니다. 
 - 제가 맡은 회원관리 시스템에는 Kakao, Naver Login, PortOne, CoolSMS, SMPT를 사용하여 개발했습니다.
-- Kakao, Naver Login은 Restful API를 사용하였습니다
+- Kakao, Naver Login은 REST API를 사용하였습니다
 - 전화번호 문자를 통해 본인인증을 하도록 CoolSMS API를 사용하였습니다.
 - 예금주 확인을 위해 PortOne API를 사용하였습니다.
 - 비밀번호 찾기를 위해서는 SMTP를 사용하여 이메일을 통해 비밀번호를 찾을 수 있게 하였습니다.
@@ -45,7 +43,7 @@ eTa는 택시 서비스의 기본 요금 인상으로 인해 부담을 느끼는
 - JSON 데이터의 특정 필드가 Java 클래스에서 인식되지 않아 에러 발생 (ohttp://m.fasterxml.jackson.databind.exc.UnrecognizedPropertyException)
 - 포트원 API JSON 문자열을 JsonNode 객체로 파싱
 
-## 에러 해결 -> [정리 보기](https://als9045.tistory.com/entry/eTa-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%A7%84%ED%96%89-%EC%A4%91-%EC%97%90%EB%9F%AC-%EB%AA%A8%EC%9D%8C)
+## 에러 경험 및 해결 -> [정리 보기](https://als9045.tistory.com/entry/eTa-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%A7%84%ED%96%89-%EC%A4%91-%EC%97%90%EB%9F%AC-%EB%AA%A8%EC%9D%8C)
 
 - PL/SQL 블록 사용
 - 화면에서 카카오로부터 응답받은 json 확인
@@ -69,12 +67,9 @@ eTa는 택시 서비스의 기본 요금 인상으로 인해 부담을 느끼는
   
 ## 기술 스택
 
-- 프론트엔드: HTML, CSS, JavaScript, BootStrap, Chart js, JSP, JSTL, JQuery, Ajax, Json
-- 백엔드: Java, SpringBoot, Tomcat, Open SSL, WebSocket, OAuth, SMTP, Mybatis
-- 데이터베이스: MongoDB, Oracle, redis
-- Tool & CI/CD : GitHub, docker, Maven, eclips, JUnit, SQLDeveloper, Jenkins
-- 기타: Kakao Map API, Kakao login, Naver login, Portone, Coolsms, Kakao mobility, Naver Cloud
-        Loda-Balencer, Server(Ubuntu20), Nacl, Global DNS, CDN+, SUbnet, Auto Scaling, Naver Sense
-  
-
-
+- **Front End**: HTML, CSS, JavaScript, BootStrap, Chart js, JSP, JSTL, JQuery, Ajax, Json
+- **Back End**: Java, SpringBoot, Tomcat, Open SSL, WebSocket, OAuth, SMTP, Mybatis
+- **Database**: MongoDB, Oracle, redis
+- **Tool & CI/CD** : GitHub, docker, Maven, eclips, JUnit, SQLDeveloper, Jenkins
+- **Naver Cloud & API**: Kakao Map API, Kakao login, Naver login, Portone, Coolsms, Kakao mobility,                                                           Naver Cloud LoadBalancer, 
+                         Server(Ubuntu20), Nacl, Global DNS, CDN+, SUbnet, Auto Scaling, Naver Sense
